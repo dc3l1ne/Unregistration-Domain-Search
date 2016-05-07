@@ -1,4 +1,8 @@
 #coding=utf-8
+'''
+By:Dc3
+https://185.es
+'''
 import requests
 import itertools
 import string
