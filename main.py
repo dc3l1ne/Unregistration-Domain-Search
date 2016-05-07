@@ -11,8 +11,8 @@ from bs4 import BeautifulSoup
 MaxThreads=5 #The best threads that your IP won't get banned
 class DomainSearch:
 	def __init__(self):
-		self.list=['vip',"ac","ag","am","at","be","bz","ca","cc","ch","cm","cn","co","co.uk","cx","cz","de","dk","ec","eu","fm","fr","gs","gy","hn","im","in","io","jp","la","li","lo","me","mn","mx","nl","no","pl","pm","pw","re","sc","se","sh","so","tf","tl","tv","tw","uk","us","vc","wf","ws","yt","bar","bet","bid","bio","biz","cab","car","ceo","com","dog","eus","fit","fyi","hiv","how","ink","kim","lol","mba","men","moe","mom","net","ngo","nyc","one","ong","onl","ooo","org","pet","pro","pub","red","rip","run","sex","ski","soy","srl","tax","tel","top","uno","vet","vin","win","wtf","xxx","xyz","army","asia","auto","band","beer","best","bike","blue","buzz","cafe","camp","care","cars","casa","cash","chat","city","club","cool","date","desi","diet","fail","fans","farm","film","fish","fund","gent","gift","gold","golf","guru","haus","help","host","immo","info","jobs","kiwi","land","lgbt","life","limo","link","live","loan","love","ltda","menu","mobi","moda","name","navy","news","pics","pink","plus","porn","qpon","rent","rest","rich","sale","sarl","scot","sexy","show","site","surf","taxi","team","tech","tips","town","toys","vote","voto","wiki","wine","work","yoga","zone"]
-		# self.mythreads = Queue.Queue(maxsize = 0) 
+		self.list=["ac","ag","am","at","be","bz","ca","cc","ch","cm","cn","co","co.uk","cx","cz","de","dk","ec","eu","fm","fr","gs","gy","hn","im","in","io","jp","la","li","lo","me","mn","mx","nl","no","pl","pm","pw","re","sc","se","sh","so","tf","tl","tv","tw","uk","us","vc","wf","ws","yt","bar","bet","bid","bio","biz","cab","car","ceo","com","dog","eus","fit","fyi","hiv","how","ink","kim","lol","mba","men","moe","mom","net","ngo","nyc","one","ong","onl","ooo","org","pet","pro","pub","red","rip","run","sex","ski","soy","srl","tax","tel","top","uno","vet","vin","win","wtf","xxx","xyz","army","asia","auto","band","beer","best","bike","blue","buzz","cafe","camp","care","cars","casa","cash","chat","city","club","cool","date","desi","diet","fail","fans","farm","film","fish","fund","gent","gift","gold","golf","guru","haus","help","host","immo","info","jobs","kiwi","land","lgbt","life","limo","link","live","loan","love","ltda","menu","mobi","moda","name","navy","news","pics","pink","plus","porn","qpon","rent","rest","rich","sale","sarl","scot","sexy","show","site","surf","taxi","team","tech","tips","town","toys","vote","voto","wiki","wine","work","yoga","zone"]
+		self.list2=['com','es','net','asia','mobi','xyz','online','rocks','global','io','guru','work','life','website','today','solutions','company','photography','space','news','directory','tv','digital','email','help','city','ph','uk','design','video','world','fashion','media','chat','services','academy','cool','coach','expert']
 		self.mythreads = []
 	def input(self):
 		try:
@@ -41,28 +41,34 @@ class DomainSearch:
 				confirm=raw_input('\nThe length of suffix you selected:%d\nIs that correct?(yes/no)'%self.tld)
 				if confirm == 'yes':
 					confirm=''
-					break
+					return(length,1)
 				else:
 					confirm=''
-			except KeyboardInterrupt:
-				exit()
 			except ValueError:
 				if self.tld not in self.list:
+					if self.tld not in self.list2:
 						print "The suffix '%s' hasn't been supported"%self.tld
+					else:
+						confirm=raw_input("\nThe suffix you selected:%s,which will use GoDaddy's API\nIs that correct?(yes/no)"%self.tld)
+						if confirm == 'yes':
+							self.daddy=1
+							return(length,1)
+						else:
+							confirm=''
 				else:
 					confirm=raw_input('\nThe suffix you selected:%s\nIs that correct?(yes/no)'%self.tld)
 					if confirm == 'yes':
 						confirm=''
-						break
+						return(length,0)
 					else:
 						confirm=''
-		self.generate_prefix(length)
+			except KeyboardInterrupt:
+				exit()
 	def generate_prefix(self,length):
 		assert length >= 1
 		p = []
 		self.start=time.time()
 		print 'Generating prefix..\n'
-		# for i in xrange(1, length + 1):
 		if self.type == 3:
 			p.append(itertools.product(string.printable[:36], repeat=length))
 		elif self.type == 2:
@@ -71,14 +77,21 @@ class DomainSearch:
 			p.append(itertools.product(string.printable[:10], repeat=length))
 		self.temp=itertools.chain(*p)
 	def runthread(self):
+		if self.daddy:
+			MaxThreads=20
+			print 'Set MaxThreads to 20'
 		print 'Start @%s'%time.strftime('%Y-%m-%d %H:%M:%S\n')
 		if type(self.tld) == str:
 			for domain in self.temp: #Which won't cause MemoryError
 				try:
 					domain=''.join(domain)
 					domain=domain+'.'+self.tld
-					t=threading.Thread(target=self.test_domain, args=(domain,))
-					t.setDaemon(True)
+					if self.tld in self.list2:
+						t=threading.Thread(target=self.test_domain_godaddy, args=(domain,))
+						t.setDaemon(True)
+					else:
+						t=threading.Thread(target=self.test_domain, args=(domain,))
+						t.setDaemon(True)
 					while True:
 						if(threading.active_count() < MaxThreads+1):
 							t.start()
@@ -174,6 +187,42 @@ class DomainSearch:
 				f.write(domain+'\n')
 				f.close()
 				break
+	def test_domain_godaddy(self,domain):
+		headers = {
+						'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+						'Accept-Language': 'en-US;q=0.5,en;q=0.3',
+						'Accept-Encoding': 'gzip, deflate, br',
+						'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:42.0) Gecko/20100101 Firefox/42.0',
+						'DNT':1,
+						'Connection': 'keep-alive',
+						'Content-Type': 'application/x-www-form-urlencoded'
+						}
+		count=1
+		while True:
+			if count !=3:
+				if count !=1:
+					print 'Retry %d times %s' %(count,domain)
+				try:
+					data=requests.get('http://sg.godaddy.com//domainsapi/v1/search/exact?q=%s&key=dpp_search&pc=&ptl='%domain,headers=headers,cookies={'currency':'USD'},timeout=30)
+					json_data=json.loads(data.text)
+					if json_data['ExactMatchDomain']['AvailabilityStatus'] == 1000:
+						price=json_data['Products'][0]['PriceInfo']['CurrentPriceDisplay']
+						print '%s available!\t%s' %(domain,price)
+						f=open('available.txt','a')
+						f.write('%s\t$%s\n'%(domain,price))
+						f.close()
+						break
+					elif json_data['ExactMatchDomain']['AvailabilityStatus'] == 1001:
+						print '%s unavailable!' %(domain)
+						break
+				except:
+					count+=1
+			else:
+				print 'Error at %s'%domain
+				f=open('error.txt','a')
+				f.write(domain+'\n')
+				f.close()
+				break
 	def get_cookie_token(self):
 		while True:
 			headers = {
@@ -216,8 +265,12 @@ class DomainSearch:
 		t.start()
 if __name__ == "__main__":
 	run=DomainSearch()
-	run.input()
-	run.update_cookie_token() #Update cookies and token every 10 minutes
-	print 'Waiting 5s to get cookies and token'
-	time.sleep(5)
+	length,daddy=run.input()
+	run.generate_prefix(length)
+	if not daddy:
+		run.update_cookie_token() #Update cookies and token every 10 minutes
+		print 'Waiting 5s to get cookies and token'
+		time.sleep(5)
+	else:
+		print "Use Godaddy's API,no need to get cookies"
 	run.runthread()
