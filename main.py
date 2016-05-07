@@ -77,9 +77,6 @@ class DomainSearch:
 			p.append(itertools.product(string.printable[:10], repeat=length))
 		self.temp=itertools.chain(*p)
 	def runthread(self):
-		if self.daddy:
-			MaxThreads=20
-			print 'Set MaxThreads to 20'
 		print 'Start @%s'%time.strftime('%Y-%m-%d %H:%M:%S\n')
 		if type(self.tld) == str:
 			for domain in self.temp: #Which won't cause MemoryError
