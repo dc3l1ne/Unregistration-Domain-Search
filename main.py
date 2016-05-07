@@ -206,7 +206,7 @@ class DomainSearch:
 						price=json_data['Products'][0]['PriceInfo']['CurrentPriceDisplay']
 						print '%s available!\t%s' %(domain,price)
 						f=open('available.txt','a')
-						f.write('%s\t$%s\n'%(domain,price))
+						f.write('%s\t%s\n'%(domain,price))
 						f.close()
 						break
 					elif json_data['ExactMatchDomain']['AvailabilityStatus'] == 1001:
