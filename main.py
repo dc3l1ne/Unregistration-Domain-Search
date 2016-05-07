@@ -106,12 +106,12 @@ class DomainSearch:
 			while True: #Waiting all threads to finish
 				if not self.daddy:
 					if threading.active_count() == 2:
-					print 'Done @%s'%time.strftime('%Y-%m-%d %H:%M:%S\n')
-					print 'Time consuming %.2f'%(time.time()-self.start)
-					f=open('available.txt','a')
-					f.write('Done @%s'%time.strftime('%Y-%m-%d %H:%M:%S\n'))
-					f.close()
-					exit()
+						print 'Done @%s'%time.strftime('%Y-%m-%d %H:%M:%S\n')
+						print 'Time consuming %.2f'%(time.time()-self.start)
+						f=open('available.txt','a')
+						f.write('Done @%s'%time.strftime('%Y-%m-%d %H:%M:%S\n'))
+						f.close()
+						exit()
 					else:
 						time.sleep(0.5)
 				elif threading.active_count() == 1:
@@ -146,12 +146,12 @@ class DomainSearch:
 			while True: #Waiting all threads to finish
 				if not self.daddy:
 					if threading.active_count() == 2:
-					print 'Done @%s'%time.strftime('%Y-%m-%d %H:%M:%S\n')
-					print 'Time consuming %.2f'%(time.time()-self.start)
-					f=open('available.txt','a')
-					f.write('Done @%s'%time.strftime('%Y-%m-%d %H:%M:%S\n'))
-					f.close()
-					exit()
+						print 'Done @%s'%time.strftime('%Y-%m-%d %H:%M:%S\n')
+						print 'Time consuming %.2f'%(time.time()-self.start)
+						f=open('available.txt','a')
+						f.write('Done @%s'%time.strftime('%Y-%m-%d %H:%M:%S\n'))
+						f.close()
+						exit()
 					else:
 						time.sleep(0.5)
 				elif threading.active_count() == 1:
