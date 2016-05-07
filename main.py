@@ -41,7 +41,7 @@ class DomainSearch:
 				confirm=raw_input('\nThe length of suffix you selected:%d\nIs that correct?(yes/no)'%self.tld)
 				if confirm == 'yes':
 					confirm=''
-					return(length,1)
+					return(length,0)
 				else:
 					confirm=''
 			except ValueError:
@@ -50,7 +50,7 @@ class DomainSearch:
 						print "The suffix '%s' hasn't been supported"%self.tld
 					else:
 						confirm=raw_input("\nThe suffix you selected:%s,which will use GoDaddy's API\nIs that correct?(yes/no)"%self.tld)
-						if confirm == 'yes':
+						if confirm == 'yes' or confirm == 'y':
 							self.daddy=1
 							return(length,1)
 						else:
@@ -77,16 +77,16 @@ class DomainSearch:
 			p.append(itertools.product(string.printable[:10], repeat=length))
 		self.temp=itertools.chain(*p)
 	def runthread(self):
-		# if self.daddy:
-			# MaxThreads=10
-			# print 'Set MaxThreads to 10'
+		if self.daddy:
+			MaxThreads=10
+			print 'Set MaxThreads to 10'
 		print 'Start @%s'%time.strftime('%Y-%m-%d %H:%M:%S\n')
 		if type(self.tld) == str:
 			for domain in self.temp: #Which won't cause MemoryError
 				try:
 					domain=''.join(domain)
 					domain=domain+'.'+self.tld
-					if self.tld in self.list2:
+					if self.daddy:
 						t=threading.Thread(target=self.test_domain_godaddy, args=(domain,))
 						t.setDaemon(True)
 					else:
@@ -104,13 +104,25 @@ class DomainSearch:
 				except:
 					traceback.print_exc()
 			while True: #Waiting all threads to finish
-				if threading.active_count() == 1:
+				if not self.daddy:
+					if threading.active_count() == 2:
 					print 'Done @%s'%time.strftime('%Y-%m-%d %H:%M:%S\n')
-					print 'Time consuming %s'%time.time()-self.start
+					print 'Time consuming %.2f'%(time.time()-self.start)
 					f=open('available.txt','a')
 					f.write('Done @%s'%time.strftime('%Y-%m-%d %H:%M:%S\n'))
 					f.close()
 					exit()
+					else:
+						time.sleep(0.5)
+				elif threading.active_count() == 1:
+					print 'Done @%s'%time.strftime('%Y-%m-%d %H:%M:%S\n')
+					print 'Time consuming %.2f'%(time.time()-self.start)
+					f=open('available.txt','a')
+					f.write('Done @%s'%time.strftime('%Y-%m-%d %H:%M:%S\n'))
+					f.close()
+					exit()
+				else:
+					time.sleep(0.5)
 		elif type(self.tld) == int:
 			for suffix in self.list:
 				if len(suffix) == self.tld:
@@ -132,13 +144,25 @@ class DomainSearch:
 						except:
 							traceback.print_exc()
 			while True: #Waiting all threads to finish
-				if threading.active_count() == 1:
+				if not self.daddy:
+					if threading.active_count() == 2:
 					print 'Done @%s'%time.strftime('%Y-%m-%d %H:%M:%S\n')
-					print 'Time consuming %s'%time.time()-self.start
+					print 'Time consuming %.2f'%(time.time()-self.start)
 					f=open('available.txt','a')
 					f.write('Done @%s'%time.strftime('%Y-%m-%d %H:%M:%S\n'))
 					f.close()
 					exit()
+					else:
+						time.sleep(0.5)
+				elif threading.active_count() == 1:
+					print 'Done @%s'%time.strftime('%Y-%m-%d %H:%M:%S\n')
+					print 'Time consuming %.2f'%(time.time()-self.start)
+					f=open('available.txt','a')
+					f.write('Done @%s'%time.strftime('%Y-%m-%d %H:%M:%S\n'))
+					f.close()
+					exit()
+				else:
+					time.sleep(0.5)
 	def test_domain(self,domain):
 		count=0
 		start_data={'config':'new-main','page':0,'tracking_type':'dynamic-powerbar-search','version':4.1,'search_tracking_id':0,'keyword':domain}
