@@ -12,7 +12,7 @@ MaxThreads=5 #The best threads that your IP won't get banned
 class DomainSearch:
 	def __init__(self):
 		self.list=["ac","ag","am","at","be","bz","ca","cc","ch","cm","cn","co","co.uk","cx","cz","de","dk","ec","eu","fm","fr","gs","gy","hn","im","in","io","jp","la","li","lo","me","mn","mx","nl","no","pl","pm","pw","re","sc","se","sh","so","tf","tl","tv","tw","uk","us","vc","wf","ws","yt","bar","bet","bid","bio","biz","cab","car","ceo","com","dog","eus","fit","fyi","hiv","how","ink","kim","lol","mba","men","moe","mom","net","ngo","nyc","one","ong","onl","ooo","org","pet","pro","pub","red","rip","run","sex","ski","soy","srl","tax","tel","top","uno","vet","vin","win","wtf","xxx","xyz","army","asia","auto","band","beer","best","bike","blue","buzz","cafe","camp","care","cars","casa","cash","chat","city","club","cool","date","desi","diet","fail","fans","farm","film","fish","fund","gent","gift","gold","golf","guru","haus","help","host","immo","info","jobs","kiwi","land","lgbt","life","limo","link","live","loan","love","ltda","menu","mobi","moda","name","navy","news","pics","pink","plus","porn","qpon","rent","rest","rich","sale","sarl","scot","sexy","show","site","surf","taxi","team","tech","tips","town","toys","vote","voto","wiki","wine","work","yoga","zone"]
-		self.list2=['cn','in','com','es','net','asia','mobi','xyz','online','rocks','global','io','guru','work','life','website','today','solutions','company','photography','space','news','directory','tv','digital','email','help','city','ph','uk','design','video','world','fashion','media','chat','services','academy','cool','coach','expert']
+		self.list2=['de','cn','in','com','es','net','asia','mobi','xyz','online','rocks','global','io','guru','work','life','website','today','solutions','company','photography','space','news','directory','tv','digital','email','help','city','ph','uk','design','video','world','fashion','media','chat','services','academy','cool','coach','expert']
 		self.mythreads = []
 	def input(self):
 		try:
@@ -45,23 +45,23 @@ class DomainSearch:
 				else:
 					confirm=''
 			except ValueError:
-				if self.tld not in self.list:
-					if self.tld not in self.list2:
-						print "The suffix '%s' hasn't been supported"%self.tld
+				if self.tld in self.list2:
+					confirm=raw_input("\nThe suffix you selected:%s,which will use GoDaddy's API\nIs that correct?(yes/no)"%self.tld)
+					if confirm == 'yes' or confirm == 'y':
+						self.daddy=1
+						return(length,1)
 					else:
-						confirm=raw_input("\nThe suffix you selected:%s,which will use GoDaddy's API\nIs that correct?(yes/no)"%self.tld)
-						if confirm == 'yes' or confirm == 'y':
-							self.daddy=1
-							return(length,1)
-						else:
-							confirm=''
-				else:
+						confirm=''
+				elif self.tld in self.list:
 					confirm=raw_input('\nThe suffix you selected:%s\nIs that correct?(yes/no)'%self.tld)
 					if confirm == 'yes':
 						confirm=''
+						self.daddy=0
 						return(length,0)
 					else:
 						confirm=''
+				else:
+					print "The suffix '%s' hasn't been supported"%self.tld				
 			except KeyboardInterrupt:
 				exit()
 	def generate_prefix(self,length):
